@@ -1,18 +1,48 @@
 import { useState } from "react";
+import './SudokuCell.css';
 
 const CELL_DEFAULT_BORDER_COLOR = "#ccc";
 const CELL_SELECTED_BORDER_COLOR = "#68a7ca";
 
-const Cell = (props: { key: number }) => {
+const GuessesGrid = (props: {guessesBitset: number}) => {
+	return (
+				<div className="grid-container">
+					{[1, 2, 3].map((row) => (
+						<div key={`row-${row}`} className="grid-row">
+							{[1, 2, 3].map((col) => {
+								const num = (col - 1) * 3 + row;
+								return (
+									<div
+										key={`col-${col}`}
+										className={`grid-item`}
+									>
+									{
+										(props.guessesBitset & (1 << num)) ?
+										num :
+										' '
+									}
+									</div>
+								);
+							})}
+						</div>
+					))}
+				</div>
+	)
+}
+
+const Cell = (props: {row: number, column: number, isGuessing: boolean}) => {
   const [isSelected, setSelected] = useState(false);
   const [guessesBitset, setGuesses] = useState<number>(0);
   const [answer, setAnswer] = useState<number | null>(null);
-	// TODO: change to global
-	const is_guessing = true;
+	const key = props.row * 3 + props.column;
 
-  const onKeyPress = (event: React.KeyboardEvent<HTMLElement>) => {
+  const handleInput = (event: React.KeyboardEvent<HTMLElement>) => {
+		if (event.key == "Backspace" && answer != null) {
+			setAnswer(null);
+			return;
+		}
+
 		var newDigit = Number(event.key);
-    
 		if (isNaN(newDigit)) {
       return;
     };
@@ -21,7 +51,7 @@ const Cell = (props: { key: number }) => {
 			return;
 		};
 
-		if (is_guessing) { 
+		if (props.isGuessing) { 
 			setGuesses(guessesBitset ^ (1 << newDigit)); 
 		}
 		else { 
@@ -37,8 +67,8 @@ const Cell = (props: { key: number }) => {
 	}
 
 	const cellStyle = {
-		width: '50px',
-		height: '50px',
+		width: '100px',
+		height: '100px',
 		border: '1px solid ' + CELL_DEFAULT_BORDER_COLOR,
 		borderColor: isSelected ? CELL_SELECTED_BORDER_COLOR : CELL_DEFAULT_BORDER_COLOR,
 		display: 'flex',
@@ -49,16 +79,17 @@ const Cell = (props: { key: number }) => {
 	};
 
   return <div
+			className="sudoku-cell"
 			style={cellStyle}
       tabIndex={1}
       onFocus={() => setSelected(true)}
       onBlur={() => setSelected(false)}
-      onKeyPress={onKeyPress}
-			key={props.key}
+			onKeyDown={handleInput}
+			key={key}
     >
 		{
 			(answer == null) ?
-			guessesString :
+			<GuessesGrid guessesBitset={guessesBitset}/> :
 			answer
 		}
     </div>
