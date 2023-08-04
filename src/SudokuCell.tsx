@@ -1,40 +1,34 @@
 import { useState } from "react";
-import './SudokuCell.css';
+import { Grid } from "@mui/material";
+import "./Sudoku.css"
 
 const CELL_DEFAULT_BORDER_COLOR = "#ccc";
 const CELL_SELECTED_BORDER_COLOR = "#68a7ca";
 
 const GuessesGrid = (props: {guessesBitset: number}) => {
 	return (
-				<div className="grid-container">
-					{[1, 2, 3].map((row) => (
-						<div key={`row-${row}`} className="grid-row">
-							{[1, 2, 3].map((col) => {
-								const num = (col - 1) * 3 + row;
-								return (
-									<div
-										key={`col-${col}`}
-										className={`grid-item`}
-									>
-									{
-										(props.guessesBitset & (1 << num)) ?
-										num :
-										' '
-									}
-									</div>
-								);
-							})}
-						</div>
-					))}
-				</div>
+	<Grid container spacing={0} style={{height: "100%"}} >
+	{
+		Array.from(Array(9)).map((_, num) => {
+			return (
+				<Grid key={num} item xs={4} style={{height: "33.33%", fontSize: "10px", textAlign: "center", verticalAlign: "middle"}}>
+					{
+						(props.guessesBitset & (1 << (num+1))) ?
+						num + 1 :
+						' '
+					}
+				</Grid>
+				)
+		})
+	}
+	</Grid>
 	)
 }
 
-const Cell = (props: {row: number, column: number, isGuessing: boolean}) => {
+const SudokuCell = (props: {num: number, isGuessing: boolean}) => {
   const [isSelected, setSelected] = useState(false);
   const [guessesBitset, setGuesses] = useState<number>(0);
   const [answer, setAnswer] = useState<number | null>(null);
-	const key = props.row * 3 + props.column;
 
   const handleInput = (event: React.KeyboardEvent<HTMLElement>) => {
 		if (event.key == "Backspace" && answer != null) {
@@ -67,8 +61,7 @@ const Cell = (props: {row: number, column: number, isGuessing: boolean}) => {
 	}
 
 	const cellStyle = {
-		width: '100px',
-		height: '100px',
+		height: '100%',
 		border: '1px solid ' + CELL_DEFAULT_BORDER_COLOR,
 		borderColor: isSelected ? CELL_SELECTED_BORDER_COLOR : CELL_DEFAULT_BORDER_COLOR,
 		display: 'flex',
@@ -85,7 +78,7 @@ const Cell = (props: {row: number, column: number, isGuessing: boolean}) => {
       onFocus={() => setSelected(true)}
       onBlur={() => setSelected(false)}
 			onKeyDown={handleInput}
-			key={key}
+			key={props.num}
     >
 		{
 			(answer == null) ?
@@ -95,4 +88,4 @@ const Cell = (props: {row: number, column: number, isGuessing: boolean}) => {
     </div>
 };
 
-export default Cell;
+export default SudokuCell;

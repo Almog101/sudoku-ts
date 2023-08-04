@@ -1,0 +1,16 @@
+ @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
+* { 
+	margin:0;
+	padding:0;
+	box-sizing:border-box;
+	font-family: 'Roboto', sans-serif;
+}
+
+.container {
+  display: flex;
+  flex-direction: column; /* Set the flex direction to column */
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Adjust this value to control the vertical centering */
+}
