@@ -25,7 +25,7 @@ const GuessesGrid = (props: {guessesBitset: number}) => {
 	)
 }
 
-const SudokuCell = (props: {num: number, isGuessing: boolean}) => {
+const SudokuCell = (props: {num: number}) => {
   const [isSelected, setSelected] = useState(false);
   const [guessesBitset, setGuesses] = useState<number>(0);
   const [answer, setAnswer] = useState<number | null>(null);
@@ -45,7 +45,7 @@ const SudokuCell = (props: {num: number, isGuessing: boolean}) => {
 			return;
 		};
 
-		if (props.isGuessing) { 
+		if (window.isGuessing) { 
 			setGuesses(guessesBitset ^ (1 << newDigit)); 
 		}
 		else { 
