@@ -6,10 +6,10 @@ const SudokuGrid = () => {
 	return (
 	<Grid container spacing={0} style={{width: "500px", height: "500px"}}>
 	{
-		Array.from(Array(9)).map((_, num) => {
+		Array.from(Array(9)).map((_, subgridIndex) => {
 			return (
-				<Grid key={num} item xs={4} >
-					<SudokuSubgrid/>
+				<Grid key={subgridIndex} item xs={4} >
+					<SudokuSubgrid index={subgridIndex}/>
 				</Grid>
 			)
 		})
