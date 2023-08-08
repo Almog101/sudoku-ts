@@ -43,6 +43,7 @@ const SudokuCell = forwardRef((props: {subgridIndex: number, index: number}, ref
   const [answer, setAnswer] = useState<number | null>(null);
   const cellRef = useRef(null);
 
+	console.log("cell render");
   useImperativeHandle(ref, () => {
     return {
       setAnswer(value: number | null) {
@@ -51,8 +52,14 @@ const SudokuCell = forwardRef((props: {subgridIndex: number, index: number}, ref
 			getAnswer(): number | null {
 				return answer;
 			},
-			setLocked(value: false) {
+			setLocked(value: boolean) {
 				setLocked(value);
+			},
+			isLocked(): boolean {
+				return isLocked;
+			},
+			setSelected(value: boolean) {
+				setSelected(value);
 			},
 			reset() {
 				setAnswer(null);

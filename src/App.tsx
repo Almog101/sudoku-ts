@@ -1,8 +1,12 @@
-import { MutableRefObject, useEffect, useRef, useState } from "react"
+import { MutableRefObject, useEffect,  useState } from "react"
 import SudokuGrid from "./SudokuGrid";
-import { Button, Checkbox, FormControlLabel } from "@mui/material";
-import SudokuCell from "./SudokuCell";
+import { Button, Checkbox, Stack, Tooltip } from "@mui/material";
+import LoadingButton from '@mui/lab/LoadingButton';
 import { generateBoard, removeCellsFromBoard } from "./sudoku";
+
+import EditIcon from '@mui/icons-material/Edit';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import RefreshIcon from '@mui/icons-material/Refresh';
 
 declare global {
     interface Window { 
@@ -18,7 +22,16 @@ const GuessingCheckbox = () => {
 		window.isGuessing = !isGuessing;
 		setGuessing(!isGuessing);
 	}
-	return <FormControlLabel control={<Checkbox checked={isGuessing} onChange={onCheck}/>} label="Is Guessing"/>
+	return (
+		<Tooltip title="When enabled, the entered digit will be placed in the 'Guesses.' If disabled, the digit will be set as the final answer for the cell.">
+			<Checkbox
+        icon={<EditIcon />}
+        checkedIcon={<EditIcon/>}
+				checked={isGuessing}
+				onChange={onCheck}
+				/>
+		</Tooltip>
+	)
 }
 
 window.isGuessing = true;
@@ -43,6 +56,63 @@ function fillBoard() {
 		}
 }
 
+const SolveButton = () => {
+  const [isSolving, setIsSolving] = useState(false);
+
+	let curr = 0;
+	useEffect(() => {
+		if (!isSolving)
+			return;
+
+    const intervalId = setInterval(() => {
+			if (curr >= 80 ) {
+				clearInterval(intervalId);
+				setIsSolving(false);
+				return;
+			}
+
+			const x = curr % 9;
+			const y = Math.floor(curr / 9);
+
+			if (window.board[y][x].current.isLocked()) {
+				curr = (curr + 1) % 81;
+				return;
+			}
+
+			window.board[y][x].current.setSelected(true);
+			const answer = window.board[y][x].current.getAnswer();
+
+			if (answer == 9) {
+				window.board[y][x].current.setAnswer(null);
+				window.board[y][x].current.setSelected(false);
+				curr = (curr + 1) % 81;
+				return;
+			}
+
+			window.board[y][x].current.setAnswer( answer + 1);
+    }, 10);
+
+    return () => {
+			setIsSolving(false);
+			clearInterval(intervalId);
+    };
+  }, [isSolving]);
+
+	return (
+		<>
+			<LoadingButton 
+				onClick={() => setIsSolving(true)}
+				loading={isSolving} 
+				loadingPosition="start"
+				startIcon={<PlayArrowIcon/>}
+				variant="contained"
+			>
+				Solve
+			</LoadingButton>
+		</>
+	)
+}
+
 function App() {
 	useEffect(fillBoard, []);
 
@@ -50,11 +120,18 @@ function App() {
 		<>
 			<div className="main-container">
 				<SudokuGrid/>
-				<div className="control-container">
+				<Stack direction="row" spacing={2}>
+					<Button 
+						className="" 
+						onClick={() => fillBoard()} 
+						variant="contained"
+						startIcon={<RefreshIcon/>}
+					>
+						Generate
+					</Button>
+					<SolveButton/>
 					<GuessingCheckbox/>
-					<Button className="" onClick={fillBoard} variant="contained">Generate</Button>
-					<Button variant="contained">Solve</Button>
-				</div>
+				</Stack>
 			</div>
 		</>
   )
