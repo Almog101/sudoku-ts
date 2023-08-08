@@ -1,9 +1,10 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { Grid } from "@mui/material";
 import "./Sudoku.css"
+import { blue, grey } from "@mui/material/colors";
 
-const CELL_DEFAULT_BORDER_COLOR = "#ccc";
-const CELL_SELECTED_BORDER_COLOR = "#6675c9";
+const CELL_DEFAULT_BORDER_COLOR = grey[400];
+const CELL_SELECTED_BORDER_COLOR = blue[400];
 
 const GuessesGrid = (props: {guessesBitset: number}) => {
 	return (
@@ -52,6 +53,11 @@ const SudokuCell = forwardRef((props: {subgridIndex: number, index: number}, ref
 			},
 			setLocked(value: false) {
 				setLocked(value);
+			},
+			reset() {
+				setAnswer(null);
+				setLocked(false);
+				setGuesses(0);
 			}
     };
   }, [answer, isLocked]);

@@ -7,10 +7,21 @@
 	font-family: 'Roboto', sans-serif;
 }
 
-.container {
+.main-container {
   display: flex;
   flex-direction: column; /* Set the flex direction to column */
   justify-content: center;
   align-items: center;
   height: 100vh; /* Adjust this value to control the vertical centering */
+}
+
+.control-container {
+  display: flex;
+  flex-direction: row; /* Set the flex direction to column */
+  justify-content: center;
+  align-items: center;
+}
+
+.control-container > :nth-child(n) {
+  margin: 5px; /* Adjust the margin value according to your preference */
 }
