@@ -42,7 +42,7 @@ for(var i: number = 0; i < 9; i++) {
 
 function fillBoard() {
 		let board = generateBoard();
-		removeCellsFromBoard(board, 60);
+		removeCellsFromBoard(board, 30);
 
 		for (let y = 0; y<9; y++) {
 			for (let x = 0; x<9; x++) {
@@ -56,6 +56,30 @@ function fillBoard() {
 		}
 }
 
+function checkCell(x: number, y: number, value: number): boolean {
+	const subgridX = Math.floor(x/3);
+	const subgridY = Math.floor(y/3);
+
+	for (let i = 0; i<9; i++) {
+		if (window.board[y][i].current.getAnswer() == value) {
+			return false;
+		}
+
+		if (window.board[i][x].current.getAnswer() == value) {
+			return false;
+		}
+
+		const subgridXOffset = i % 3;
+		const subgridYOffset = Math.floor(i / 3);
+
+		if (window.board[subgridY*3 + subgridYOffset][subgridX*3 + subgridXOffset].current.getAnswer() == value) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
 const SolveButton = () => {
   const [isSolving, setIsSolving] = useState(false);
 
@@ -65,32 +89,42 @@ const SolveButton = () => {
 			return;
 
     const intervalId = setInterval(() => {
-			if (curr >= 80 ) {
-				clearInterval(intervalId);
+			if (curr >= 81) {
 				setIsSolving(false);
+				clearInterval(intervalId);
 				return;
 			}
 
 			const x = curr % 9;
 			const y = Math.floor(curr / 9);
+			const cell = window.board[y][x].current;
 
-			if (window.board[y][x].current.isLocked()) {
-				curr = (curr + 1) % 81;
+			if (cell.isLocked()) {
+				curr++;
 				return;
 			}
 
-			window.board[y][x].current.setSelected(true);
-			const answer = window.board[y][x].current.getAnswer();
+			const currCellValue = cell.getAnswer();
+			if (currCellValue + 1 > 9) {
+				cell.setAnswer(null);
 
-			if (answer == 9) {
-				window.board[y][x].current.setAnswer(null);
-				window.board[y][x].current.setSelected(false);
-				curr = (curr + 1) % 81;
-				return;
+				let x: number;
+				let y: number;
+				
+				do {
+					curr--;
+					x = curr % 9;
+					y = Math.floor(curr / 9);
+				} while(window.board[y][x].current.isLocked());
+
+			} else {
+				cell.setAnswer(null);
+				if (checkCell(x, y, currCellValue + 1)) {
+					curr++;
+				}
+				cell.setAnswer(currCellValue + 1);
 			}
-
-			window.board[y][x].current.setAnswer( answer + 1);
-    }, 10);
+    }, 30);
 
     return () => {
 			setIsSolving(false);
