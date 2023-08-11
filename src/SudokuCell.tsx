@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import { Grid } from "@mui/material";
 import "./Sudoku.css"
 import { blue, grey } from "@mui/material/colors";
